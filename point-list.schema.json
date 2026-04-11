@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/tom-pacheco-bcm/ebo-json-schema/point-list.schema.json",
+  "$id": "https://tom-pacheco-bcm.github.io/ebo-json-schema/point-list.schema.json",
   "title": "EBO Point List",
   "description": "EBO points for a project.",
   "type": "object",
