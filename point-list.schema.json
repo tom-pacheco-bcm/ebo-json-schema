@@ -1,0 +1,1035 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/tom-pacheco-bcm/ebo-json-schema/point-list.schema.json",
+  "title": "EBO Point List",
+  "description": "EBO points for a project.",
+  "type": "object",
+  "required": ["controller_type", "points"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "url for the schema."
+    },
+    "controller_type": {
+      "type": "string",
+      "enum": ["bacnet", "server", "mpx"],
+      "description": "Target controller system type used to resolve point type strings."
+    },
+    "points": {
+      "type": "array",
+      "description": "Classified EBO points, sorted alphabetically by name.",
+      "items": {
+        "$ref": "#/definitions/point"
+      }
+    }
+  },
+  "if": { "properties": { "controller_type": { "const": "bacnet" } } },
+  "then": {
+    "properties": {
+      "points": {
+        "items": {
+          "properties": {
+            "type": {
+              "enum": [
+                "bacnet.point.analog.Input",
+                "bacnet.point.analog.Output",
+                "bacnet.point.analog.Value",
+                "bacnet.point.digital.Input",
+                "bacnet.point.digital.Output",
+                "bacnet.point.digital.Value",
+                "bacnet.point.integer.Value",
+                "bacnet.point.multistate.Input",
+                "bacnet.point.multistate.Output",
+                "bacnet.point.multistate.Value",
+                "server.point.SV",
+                "server.point.TS"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "else": {
+    "if": { "properties": { "controller_type": { "const": "server" } } },
+    "then": {
+      "properties": {
+        "points": {
+          "items": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "server.point.AV",
+                  "server.point.BV",
+                  "server.point.IV",
+                  "server.point.SV",
+                  "server.point.TS"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "else": {
+      "properties": {
+        "points": {
+          "items": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "bacnet.mpx.point.AirflowInput",
+                  "bacnet.mpx.point.CounterInput",
+                  "bacnet.mpx.point.CurrentInput",
+                  "bacnet.mpx.point.CurrentOutput",
+                  "bacnet.mpx.point.DamperOutput",
+                  "bacnet.mpx.point.DigitalInput",
+                  "bacnet.mpx.point.DigitalOutput",
+                  "bacnet.mpx.point.DigitalPulsedOutput",
+                  "bacnet.mpx.point.IntegerInput",
+                  "bacnet.mpx.point.PulseWidthOutput",
+                  "bacnet.mpx.point.ResistiveInput",
+                  "bacnet.mpx.point.RTD2WireInput",
+                  "bacnet.mpx.point.SupervisedInput",
+                  "bacnet.mpx.point.TemperatureInput",
+                  "bacnet.mpx.point.TristateOutput",
+                  "bacnet.mpx.point.TristatePulsedOutput",
+                  "bacnet.mpx.point.VoltageInput",
+                  "bacnet.mpx.point.VoltageOutput",
+                  "bacnet.mpx.value.AnalogConsumerValue",
+                  "bacnet.mpx.value.AnalogProducerValue",
+                  "bacnet.mpx.value.AnalogValue",
+                  "bacnet.mpx.value.CharacterString",
+                  "bacnet.mpx.value.DateTimeValue",
+                  "bacnet.mpx.value.DigitalConsumerValue",
+                  "bacnet.mpx.value.DigitalProducerValue",
+                  "bacnet.mpx.value.DigitalValue",
+                  "bacnet.mpx.value.IntegerConsumerValue",
+                  "bacnet.mpx.value.IntegerProducerValue",
+                  "bacnet.mpx.value.IntegerValue",
+                  "bacnet.mpx.value.MultistateConsumerValue",
+                  "bacnet.mpx.value.MultistateProducerValue",
+                  "bacnet.mpx.value.MultistateValue",
+                  "server.point.AV",
+                  "server.point.BV",
+                  "server.point.IV",
+                  "server.point.SV",
+                  "server.point.TS"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "point": {
+      "description": "A classified EBO point. Allowed optional properties depend on the point type.",
+      "anyOf": [
+        { "$ref": "#/definitions/point_analog_bacnet" },
+        { "$ref": "#/definitions/point_integer_bacnet" },
+        { "$ref": "#/definitions/point_digital_bacnet" },
+        { "$ref": "#/definitions/point_multistate_bacnet" },
+        { "$ref": "#/definitions/point_server" },
+        { "$ref": "#/definitions/point_mpx_analog" },
+        { "$ref": "#/definitions/point_mpx_analog_consumer" },
+        { "$ref": "#/definitions/point_mpx_integer" },
+        { "$ref": "#/definitions/point_mpx_integer_consumer" },
+        { "$ref": "#/definitions/point_mpx_digital" },
+        { "$ref": "#/definitions/point_mpx_digital_consumer" },
+        { "$ref": "#/definitions/point_mpx_multistate" },
+        { "$ref": "#/definitions/point_mpx_multistate_consumer" },
+        { "$ref": "#/definitions/point_mpx_string" },
+        { "$ref": "#/definitions/point_mpx_hardware_analog_input" },
+        { "$ref": "#/definitions/point_mpx_hardware_analog_input_scaled" },
+        { "$ref": "#/definitions/point_mpx_hardware_analog_output" },
+        { "$ref": "#/definitions/point_mpx_hardware_binary_input" },
+        { "$ref": "#/definitions/point_mpx_hardware_binary_output" }
+      ]
+    },
+
+    "point_analog_bacnet": {
+      "type": "object",
+      "description": "BACnet analog point (bacnet.point.analog.*).",
+      "required": ["name", "type", "setpoint"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Normalized point name, including any configured prefix."
+        },
+        "path": {
+          "type": "string",
+          "description": "Values directory where the point is located. Omitted for single-app projects."
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "bacnet.point.analog.Input",
+            "bacnet.point.analog.Output",
+            "bacnet.point.analog.Value"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "description": "Initial present value. Defaults to \"0\"."
+        },
+        "setpoint": {
+          "type": "boolean",
+          "description": "True when the point is classified as a Setpoint."
+        },
+        "DESCR": { "type": "string", "description": "Object description." },
+        "MinPresValue": {
+          "type": "string",
+          "description": "Minimum present value."
+        },
+        "MaxPresValue": {
+          "type": "string",
+          "description": "Maximum present value."
+        },
+        "HighLimit": { "type": "string", "description": "High alarm limit." },
+        "LowLimit": { "type": "string", "description": "Low alarm limit." },
+        "LimitEnable": {
+          "type": "string",
+          "description": "Limit enable bits."
+        },
+        "NotificationClass": {
+          "type": "string",
+          "description": "BACnet alarm notification class."
+        },
+        "EventDetectionEnable": {
+          "type": "string",
+          "description": "Enable event detection."
+        },
+        "EventEnable": {
+          "type": "string",
+          "description": "Event transition enable bits."
+        },
+        "AlarmMessage": {
+          "type": "string",
+          "description": "Message text when alarm."
+        },
+        "ResetMessage": {
+          "type": "string",
+          "description": "Message text when reset."
+        },
+        "FaultMessage": {
+          "type": "string",
+          "description": "Message text when fault."
+        }
+      }
+    },
+
+    "point_integer_bacnet": {
+      "type": "object",
+      "description": "BACnet integer point (bacnet.point.integer.Value).",
+      "required": ["name", "type", "setpoint"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Normalized point name, including any configured prefix."
+        },
+        "path": {
+          "type": "string",
+          "description": "Values directory where the point is located. Omitted for single-app projects."
+        },
+        "type": { "type": "string", "enum": ["bacnet.point.integer.Value"] },
+        "value": {
+          "type": "string",
+          "description": "Initial present value. Defaults to \"0\"."
+        },
+        "setpoint": {
+          "type": "boolean",
+          "description": "True when the point is classified as a Setpoint."
+        },
+        "DESCR": { "type": "string", "description": "Object description." },
+        "MinPresValue": {
+          "type": "string",
+          "description": "Minimum present value."
+        },
+        "MaxPresValue": {
+          "type": "string",
+          "description": "Maximum present value."
+        },
+        "NotificationClass": {
+          "type": "string",
+          "description": "BACnet alarm notification class."
+        },
+        "EventDetectionEnable": {
+          "type": "string",
+          "description": "Enable event detection."
+        },
+        "EventEnable": {
+          "type": "string",
+          "description": "Event transition enable bits."
+        },
+        "AlarmMessage": {
+          "type": "string",
+          "description": "Message text when alarm."
+        },
+        "ResetMessage": {
+          "type": "string",
+          "description": "Message text when reset."
+        },
+        "FaultMessage": {
+          "type": "string",
+          "description": "Message text when fault."
+        }
+      }
+    },
+
+    "point_digital_bacnet": {
+      "type": "object",
+      "description": "BACnet digital point (bacnet.point.digital.*).",
+      "required": ["name", "type", "setpoint"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Normalized point name, including any configured prefix."
+        },
+        "path": {
+          "type": "string",
+          "description": "Values directory where the point is located. Omitted for single-app projects."
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "bacnet.point.digital.Input",
+            "bacnet.point.digital.Output",
+            "bacnet.point.digital.Value"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "description": "Initial present value. Defaults to \"0\"."
+        },
+        "setpoint": {
+          "type": "boolean",
+          "description": "True when the point is classified as a Setpoint."
+        },
+        "DESCR": { "type": "string", "description": "Object description." },
+        "InactiveText": {
+          "type": "string",
+          "description": "Inactive state text."
+        },
+        "ActiveText": { "type": "string", "description": "Active state text." },
+        "AssociatedFeedbackValue": {
+          "type": "string",
+          "description": "Associated feedback value (output/commandable types)."
+        },
+        "NotificationClass": {
+          "type": "string",
+          "description": "BACnet alarm notification class."
+        },
+        "EventDetectionEnable": {
+          "type": "string",
+          "description": "Enable event detection."
+        },
+        "EventEnable": {
+          "type": "string",
+          "description": "Event transition enable bits."
+        },
+        "AlarmMessage": {
+          "type": "string",
+          "description": "Message text when alarm."
+        },
+        "ResetMessage": {
+          "type": "string",
+          "description": "Message text when reset."
+        },
+        "FaultMessage": {
+          "type": "string",
+          "description": "Message text when fault."
+        }
+      }
+    },
+
+    "point_multistate_bacnet": {
+      "type": "object",
+      "description": "BACnet multistate point (bacnet.point.multistate.*).",
+      "required": ["name", "type", "setpoint"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Normalized point name, including any configured prefix."
+        },
+        "path": {
+          "type": "string",
+          "description": "Values directory where the point is located. Omitted for single-app projects."
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "bacnet.point.multistate.Input",
+            "bacnet.point.multistate.Output",
+            "bacnet.point.multistate.Value"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "description": "Initial present value. Defaults to \"0\"."
+        },
+        "setpoint": {
+          "type": "boolean",
+          "description": "True when the point is classified as a Setpoint."
+        },
+        "DESCR": { "type": "string", "description": "Object description." },
+        "AssociatedFeedbackValue": {
+          "type": "string",
+          "description": "Associated feedback value (output types)."
+        },
+        "NotificationClass": {
+          "type": "string",
+          "description": "BACnet alarm notification class."
+        },
+        "EventDetectionEnable": {
+          "type": "string",
+          "description": "Enable event detection."
+        },
+        "EventEnable": {
+          "type": "string",
+          "description": "Event transition enable bits."
+        },
+        "AlarmMessage": {
+          "type": "string",
+          "description": "Message text when alarm."
+        },
+        "ResetMessage": {
+          "type": "string",
+          "description": "Message text when reset."
+        },
+        "FaultMessage": {
+          "type": "string",
+          "description": "Message text when fault."
+        }
+      }
+    },
+
+    "point_server": {
+      "type": "object",
+      "description": "EBO Server point (server.point.*).",
+      "required": ["name", "type", "setpoint"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Normalized point name, including any configured prefix."
+        },
+        "path": {
+          "type": "string",
+          "description": "Values directory where the point is located. Omitted for single-app projects."
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "server.point.AV",
+            "server.point.BV",
+            "server.point.IV",
+            "server.point.SV",
+            "server.point.TS"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "description": "Initial present value. Omitted for TS points; defaults to \"0\" for all others."
+        },
+        "setpoint": {
+          "type": "boolean",
+          "description": "True when the point is classified as a Setpoint."
+        },
+        "DESCR": { "type": "string", "description": "Object description." }
+      }
+    },
+
+    "point_mpx_analog": {
+      "type": "object",
+      "description": "MPX analog value or producer point (bacnet.mpx.value.AnalogValue, AnalogProducerValue).",
+      "required": ["name", "type", "setpoint"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Normalized point name, including any configured prefix."
+        },
+        "path": {
+          "type": "string",
+          "description": "Values directory where the point is located. Omitted for single-app projects."
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "bacnet.mpx.value.AnalogValue",
+            "bacnet.mpx.value.AnalogProducerValue"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "description": "Initial present value. Defaults to \"0\"."
+        },
+        "setpoint": {
+          "type": "boolean",
+          "description": "True when the point is classified as a Setpoint."
+        },
+        "DESCR": { "type": "string", "description": "Object description." },
+        "MinPresValue": {
+          "type": "string",
+          "description": "Minimum present value."
+        },
+        "MaxPresValue": {
+          "type": "string",
+          "description": "Maximum present value."
+        },
+        "HighLimit": { "type": "string", "description": "High alarm limit." },
+        "LowLimit": { "type": "string", "description": "Low alarm limit." },
+        "LimitEnable": {
+          "type": "string",
+          "description": "Limit enable bits."
+        },
+        "NotificationClass": {
+          "type": "string",
+          "description": "BACnet alarm notification class."
+        },
+        "EventDetectionEnable": {
+          "type": "string",
+          "description": "Enable event detection."
+        },
+        "EventEnable": {
+          "type": "string",
+          "description": "Event transition enable bits."
+        },
+        "AlarmMessage": {
+          "type": "string",
+          "description": "Message text when alarm."
+        },
+        "ResetMessage": {
+          "type": "string",
+          "description": "Message text when reset."
+        },
+        "FaultMessage": {
+          "type": "string",
+          "description": "Message text when fault."
+        }
+      }
+    },
+
+    "point_mpx_analog_consumer": {
+      "type": "object",
+      "description": "MPX analog consumer point (bacnet.mpx.value.AnalogConsumerValue).",
+      "required": ["name", "type"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Normalized point name, including any configured prefix."
+        },
+        "path": {
+          "type": "string",
+          "description": "Values directory where the point is located. Omitted for single-app projects."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["bacnet.mpx.value.AnalogConsumerValue"]
+        },
+        "value": {
+          "type": "string",
+          "description": "Initial present value. Defaults to \"0\"."
+        },
+        "DESCR": { "type": "string", "description": "Object description." },
+        "MPxInputBinding": {
+          "type": "string",
+          "description": "Binding to the producer value point."
+        }
+      }
+    },
+
+    "point_mpx_integer": {
+      "type": "object",
+      "description": "MPX integer value point (bacnet.mpx.value.Integer*).",
+      "required": ["name", "type", "setpoint"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Normalized point name, including any configured prefix."
+        },
+        "path": {
+          "type": "string",
+          "description": "Values directory where the point is located. Omitted for single-app projects."
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "bacnet.mpx.value.IntegerValue",
+            "bacnet.mpx.value.IntegerProducerValue"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "description": "Initial present value. Defaults to \"0\"."
+        },
+        "setpoint": {
+          "type": "boolean",
+          "description": "True when the point is classified as a Setpoint."
+        },
+        "DESCR": { "type": "string", "description": "Object description." }
+      }
+    },
+
+    "point_mpx_integer_consumer": {
+      "type": "object",
+      "description": "MPX integer consumer point (bacnet.mpx.value.IntegerConsumerValue).",
+      "required": ["name", "type"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Normalized point name, including any configured prefix."
+        },
+        "path": {
+          "type": "string",
+          "description": "Values directory where the point is located. Omitted for single-app projects."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["bacnet.mpx.value.IntegerConsumerValue"]
+        },
+        "value": {
+          "type": "string",
+          "description": "Initial present value. Defaults to \"0\"."
+        },
+        "DESCR": { "type": "string", "description": "Object description." },
+        "MPxInputBinding": {
+          "type": "string",
+          "description": "Binding to the producer value point."
+        }
+      }
+    },
+
+    "point_mpx_digital": {
+      "type": "object",
+      "description": "MPX digital value or producer point (bacnet.mpx.value.DigitalValue, DigitalProducerValue).",
+      "required": ["name", "type", "setpoint"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Normalized point name, including any configured prefix."
+        },
+        "path": {
+          "type": "string",
+          "description": "Values directory where the point is located. Omitted for single-app projects."
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "bacnet.mpx.value.DigitalValue",
+            "bacnet.mpx.value.DigitalProducerValue"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "description": "Initial present value. Defaults to \"0\"."
+        },
+        "setpoint": {
+          "type": "boolean",
+          "description": "True when the point is classified as a Setpoint."
+        },
+        "DESCR": { "type": "string", "description": "Object description." },
+        "InactiveText": {
+          "type": "string",
+          "description": "Inactive state text."
+        },
+        "ActiveText": { "type": "string", "description": "Active state text." }
+      }
+    },
+
+    "point_mpx_digital_consumer": {
+      "type": "object",
+      "description": "MPX digital consumer point (bacnet.mpx.value.DigitalConsumerValue).",
+      "required": ["name", "type"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Normalized point name, including any configured prefix."
+        },
+        "path": {
+          "type": "string",
+          "description": "Values directory where the point is located. Omitted for single-app projects."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["bacnet.mpx.value.DigitalConsumerValue"]
+        },
+        "value": {
+          "type": "string",
+          "description": "Initial present value. Defaults to \"0\"."
+        },
+        "DESCR": { "type": "string", "description": "Object description." },
+        "MPxInputBinding": {
+          "type": "string",
+          "description": "Binding to the producer value point."
+        },
+        "InactiveText": {
+          "type": "string",
+          "description": "Inactive state text."
+        },
+        "ActiveText": { "type": "string", "description": "Active state text." }
+      }
+    },
+
+    "point_mpx_multistate": {
+      "type": "object",
+      "description": "MPX multistate value or producer point (bacnet.mpx.value.MultistateValue, MultistateProducerValue).",
+      "required": ["name", "type", "setpoint"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Normalized point name, including any configured prefix."
+        },
+        "path": {
+          "type": "string",
+          "description": "Values directory where the point is located. Omitted for single-app projects."
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "bacnet.mpx.value.MultistateValue",
+            "bacnet.mpx.value.MultistateProducerValue"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "description": "Initial present value. Defaults to \"0\"."
+        },
+        "setpoint": {
+          "type": "boolean",
+          "description": "True when the point is classified as a Setpoint."
+        },
+        "DESCR": { "type": "string", "description": "Object description." }
+      }
+    },
+
+    "point_mpx_multistate_consumer": {
+      "type": "object",
+      "description": "MPX multistate consumer point (bacnet.mpx.value.MultistateConsumerValue).",
+      "required": ["name", "type"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Normalized point name, including any configured prefix."
+        },
+        "path": {
+          "type": "string",
+          "description": "Values directory where the point is located. Omitted for single-app projects."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["bacnet.mpx.value.MultistateConsumerValue"]
+        },
+        "value": {
+          "type": "string",
+          "description": "Initial present value. Defaults to \"0\"."
+        },
+        "DESCR": { "type": "string", "description": "Object description." },
+        "MPxInputBinding": {
+          "type": "string",
+          "description": "Binding to the producer value point."
+        }
+      }
+    },
+
+    "point_mpx_string": {
+      "type": "object",
+      "description": "MPX string or datetime value point (bacnet.mpx.value.CharacterString, DateTimeValue).",
+      "required": ["name", "type", "setpoint"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Normalized point name, including any configured prefix."
+        },
+        "path": {
+          "type": "string",
+          "description": "Values directory where the point is located. Omitted for single-app projects."
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "bacnet.mpx.value.CharacterString",
+            "bacnet.mpx.value.DateTimeValue"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "description": "Initial present value. Omitted for DateTimeValue."
+        },
+        "setpoint": {
+          "type": "boolean",
+          "description": "True when the point is classified as a Setpoint."
+        },
+        "DESCR": { "type": "string", "description": "Object description." }
+      }
+    },
+
+    "point_mpx_hardware_analog_input": {
+      "type": "object",
+      "description": "MPX hardware analog input point (scaled sensor inputs).",
+      "required": ["name", "type", "setpoint"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Normalized point name, including any configured prefix."
+        },
+        "path": {
+          "type": "string",
+          "description": "Values directory where the point is located. Omitted for single-app projects."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["bacnet.mpx.point.TemperatureInput"]
+        },
+        "value": { "type": "string", "description": "Initial present value." },
+        "setpoint": {
+          "type": "boolean",
+          "description": "True if this point is a setpoint (user-adjustable)."
+        },
+        "DESCR": { "type": "string", "description": "Object description." },
+        "MinPresValue": {
+          "type": "string",
+          "description": "Minimum present value (engineering units)."
+        },
+        "MaxPresValue": {
+          "type": "string",
+          "description": "Maximum present value (engineering units)."
+        },
+        "COVIncrement": {
+          "type": "string",
+          "description": "Change-of-value increment."
+        },
+        "Terminal": {
+          "type": "string",
+          "description": "IO terminal identifier."
+        }
+      }
+    },
+
+    "point_mpx_hardware_analog_input_scaled": {
+      "type": "object",
+      "description": "MPX hardware analog input point (scaled sensor inputs).",
+      "required": ["name", "type", "setpoint"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Normalized point name, including any configured prefix."
+        },
+        "path": {
+          "type": "string",
+          "description": "Values directory where the point is located. Omitted for single-app projects."
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "bacnet.mpx.point.AirflowInput",
+            "bacnet.mpx.point.CurrentInput",
+            "bacnet.mpx.point.IntegerInput",
+            "bacnet.mpx.point.ResistiveInput",
+            "bacnet.mpx.point.RTD2WireInput",
+            "bacnet.mpx.point.VoltageInput"
+          ]
+        },
+        "value": { "type": "string", "description": "Initial present value." },
+        "setpoint": {
+          "type": "boolean",
+          "description": "True if this point is a setpoint (user-adjustable)."
+        },
+        "DESCR": { "type": "string", "description": "Object description." },
+        "MinPresValue": {
+          "type": "string",
+          "description": "Minimum present value (engineering units)."
+        },
+        "MaxPresValue": {
+          "type": "string",
+          "description": "Maximum present value (engineering units)."
+        },
+        "ElecTopOfScale": {
+          "type": "string",
+          "description": "Electrical top-of-scale value."
+        },
+        "ElecBottomOfScale": {
+          "type": "string",
+          "description": "Electrical bottom-of-scale value."
+        },
+        "EngTopOfScale": {
+          "type": "string",
+          "description": "Engineering top-of-scale value."
+        },
+        "EngBottomOfScale": {
+          "type": "string",
+          "description": "Engineering bottom-of-scale value."
+        },
+        "COVIncrement": {
+          "type": "string",
+          "description": "Change-of-value increment."
+        },
+        "Terminal": {
+          "type": "string",
+          "description": "IO terminal identifier."
+        }
+      }
+    },
+
+    "point_mpx_hardware_analog_output": {
+      "type": "object",
+      "description": "MPX hardware analog output point (scaled actuator outputs).",
+      "required": ["name", "type", "setpoint"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Normalized point name, including any configured prefix."
+        },
+        "path": {
+          "type": "string",
+          "description": "Values directory where the point is located. Omitted for single-app projects."
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "bacnet.mpx.point.CurrentOutput",
+            "bacnet.mpx.point.DamperOutput",
+            "bacnet.mpx.point.PulseWidthOutput",
+            "bacnet.mpx.point.VoltageOutput"
+          ]
+        },
+        "value": { "type": "string", "description": "Initial present value." },
+        "setpoint": {
+          "type": "boolean",
+          "description": "True if this point is a setpoint (user-adjustable)."
+        },
+        "DESCR": { "type": "string", "description": "Object description." },
+        "MinPresValue": {
+          "type": "string",
+          "description": "Minimum present value (engineering units)."
+        },
+        "MaxPresValue": {
+          "type": "string",
+          "description": "Maximum present value (engineering units)."
+        },
+        "ElecTopOfScale": {
+          "type": "string",
+          "description": "Electrical top-of-scale value."
+        },
+        "ElecBottomOfScale": {
+          "type": "string",
+          "description": "Electrical bottom-of-scale value."
+        },
+        "EngTopOfScale": {
+          "type": "string",
+          "description": "Engineering top-of-scale value."
+        },
+        "EngBottomOfScale": {
+          "type": "string",
+          "description": "Engineering bottom-of-scale value."
+        },
+        "RelinquishDefault": {
+          "type": "string",
+          "description": "Default value when all commands are relinquished."
+        },
+        "Terminal": {
+          "type": "string",
+          "description": "IO terminal identifier."
+        }
+      }
+    },
+
+    "point_mpx_hardware_binary_input": {
+      "type": "object",
+      "description": "MPX hardware binary/digital input point.",
+      "required": ["name", "type", "setpoint"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Normalized point name, including any configured prefix."
+        },
+        "path": {
+          "type": "string",
+          "description": "Values directory where the point is located. Omitted for single-app projects."
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "bacnet.mpx.point.CounterInput",
+            "bacnet.mpx.point.DigitalInput",
+            "bacnet.mpx.point.SupervisedInput"
+          ]
+        },
+        "value": { "type": "string", "description": "Initial present value." },
+        "setpoint": {
+          "type": "boolean",
+          "description": "True if this point is a setpoint (user-adjustable)."
+        },
+        "DESCR": { "type": "string", "description": "Object description." },
+        "InactiveText": {
+          "type": "string",
+          "description": "Text label for the inactive (off/false) state."
+        },
+        "ActiveText": {
+          "type": "string",
+          "description": "Text label for the active (on/true) state."
+        },
+        "Polarity": {
+          "type": "string",
+          "description": "Input polarity (Normal or Reverse)."
+        },
+        "Terminal": {
+          "type": "string",
+          "description": "IO terminal identifier."
+        }
+      }
+    },
+
+    "point_mpx_hardware_binary_output": {
+      "type": "object",
+      "description": "MPX hardware binary/digital output point.",
+      "required": ["name", "type", "setpoint"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Normalized point name, including any configured prefix."
+        },
+        "path": {
+          "type": "string",
+          "description": "Values directory where the point is located. Omitted for single-app projects."
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "bacnet.mpx.point.DigitalOutput",
+            "bacnet.mpx.point.DigitalPulsedOutput",
+            "bacnet.mpx.point.TristateOutput",
+            "bacnet.mpx.point.TristatePulsedOutput"
+          ]
+        },
+        "value": { "type": "string", "description": "Initial present value." },
+        "setpoint": {
+          "type": "boolean",
+          "description": "True if this point is a setpoint (user-adjustable)."
+        },
+        "DESCR": { "type": "string", "description": "Object description." },
+        "InactiveText": {
+          "type": "string",
+          "description": "Text label for the inactive (off/false) state."
+        },
+        "ActiveText": {
+          "type": "string",
+          "description": "Text label for the active (on/true) state."
+        },
+        "Polarity": {
+          "type": "string",
+          "description": "Output polarity (Normal or Reverse)."
+        },
+        "RelinquishDefault": {
+          "type": "string",
+          "description": "Default value when all commands are relinquished."
+        },
+        "Terminal": {
+          "type": "string",
+          "description": "IO terminal identifier."
+        }
+      }
+    }
+  }
+}
