@@ -64,7 +64,16 @@
                   "server.point.BV",
                   "server.point.IV",
                   "server.point.SV",
-                  "server.point.TS"
+                  "server.point.TS",
+                  "io.point.CounterInput",
+                  "io.point.CurrentInput",
+                  "io.point.CurrentOutput",
+                  "io.point.DigitalInput",
+                  "io.point.DigitalOutput",
+                  "io.point.TemperatureInput",
+                  "io.point.TristateOutput",
+                  "io.point.VoltageInput",
+                  "io.point.VoltageOutput"
                 ]
               }
             }
@@ -115,7 +124,16 @@
                   "server.point.BV",
                   "server.point.IV",
                   "server.point.SV",
-                  "server.point.TS"
+                  "server.point.TS",
+                  "io.point.CounterInput",
+                  "io.point.CurrentInput",
+                  "io.point.CurrentOutput",
+                  "io.point.DigitalInput",
+                  "io.point.DigitalOutput",
+                  "io.point.TemperatureInput",
+                  "io.point.TristateOutput",
+                  "io.point.VoltageInput",
+                  "io.point.VoltageOutput"
                 ]
               }
             }
@@ -133,6 +151,7 @@
         { "$ref": "#/definitions/point_digital_bacnet" },
         { "$ref": "#/definitions/point_multistate_bacnet" },
         { "$ref": "#/definitions/point_server" },
+        { "$ref": "#/definitions/point_server_io" },
         { "$ref": "#/definitions/point_mpx_analog" },
         { "$ref": "#/definitions/point_mpx_analog_consumer" },
         { "$ref": "#/definitions/point_mpx_integer" },
@@ -441,6 +460,85 @@
       }
     },
 
+    "point_server_io": {
+      "type": "object",
+      "description": "EBO Server IO point (io.point.*).",
+      "required": ["name", "type"],
+      "properties": {
+        "Name": {
+          "type": "string",
+          "description": "Normalized point name, including any configured prefix."
+        },
+        "Path": {
+          "type": "string",
+          "description": "Values directory where the point is located. Omitted for single-app projects."
+        },
+        "Type": {
+          "type": "string",
+          "enum": [
+            "io.point.CounterInput",
+            "io.point.CurrentInput",
+            "io.point.CurrentOutput",
+            "io.point.DigitalInput",
+            "io.point.DigitalOutput",
+            "io.point.TemperatureInput",
+            "io.point.TristateOutput",
+            "io.point.VoltageInput",
+            "io.point.VoltageOutput"
+          ]
+        },
+        "Value": {
+          "type": "string",
+          "description": "Initial present value. Omitted for TS points; defaults to \"0\" for all others."
+        },
+        "RequestedValue": {
+          "type": "string",
+          "description": ""
+        },
+        "OutputChannelNumber": {
+          "type": "integer",
+          "description": ""
+        },
+        "EngBottomOfScale": {
+          "type": "number",
+          "description": ""
+        },
+        "EngTopOfScale": {
+          "type": "number",
+          "description": ""
+        },
+        "ElecBottomOfScale": {
+          "type": "number",
+          "description": ""
+        },
+        "ElecTopOfScale": {
+          "type": "number",
+          "description": ""
+        },
+        "Invert": {
+          "type": "string",
+          "description": ""
+        },
+        "InputChannelNumber": {
+          "type": "integer",
+          "description": ""
+        },
+        "LowerReliabilityLevel": {
+          "type": "number",
+          "description": ""
+        },
+        "UpperReliabilityLevel": {
+          "type": "number",
+          "description": ""
+        },
+        "ThermistorType": {
+          "type": "string",
+          "description": ""
+        },
+        "DESCR": { "type": "string", "description": "Object description." }
+      }
+    },
+
     "point_mpx_analog": {
       "type": "object",
       "description": "MPX analog value or producer point (bacnet.mpx.value.AnalogValue, AnalogProducerValue).",
@@ -456,10 +554,7 @@
         },
         "type": {
           "type": "string",
-          "enum": [
-            "bacnet.mpx.value.AnalogValue",
-            "bacnet.mpx.value.AnalogProducerValue"
-          ]
+          "enum": ["bacnet.mpx.value.AnalogValue", "bacnet.mpx.value.AnalogProducerValue"]
         },
         "value": {
           "type": "string",
@@ -555,10 +650,7 @@
         },
         "type": {
           "type": "string",
-          "enum": [
-            "bacnet.mpx.value.IntegerValue",
-            "bacnet.mpx.value.IntegerProducerValue"
-          ]
+          "enum": ["bacnet.mpx.value.IntegerValue", "bacnet.mpx.value.IntegerProducerValue"]
         },
         "value": {
           "type": "string",
@@ -616,10 +708,7 @@
         },
         "type": {
           "type": "string",
-          "enum": [
-            "bacnet.mpx.value.DigitalValue",
-            "bacnet.mpx.value.DigitalProducerValue"
-          ]
+          "enum": ["bacnet.mpx.value.DigitalValue", "bacnet.mpx.value.DigitalProducerValue"]
         },
         "value": {
           "type": "string",
@@ -687,10 +776,7 @@
         },
         "type": {
           "type": "string",
-          "enum": [
-            "bacnet.mpx.value.MultistateValue",
-            "bacnet.mpx.value.MultistateProducerValue"
-          ]
+          "enum": ["bacnet.mpx.value.MultistateValue", "bacnet.mpx.value.MultistateProducerValue"]
         },
         "value": {
           "type": "string",
@@ -748,10 +834,7 @@
         },
         "type": {
           "type": "string",
-          "enum": [
-            "bacnet.mpx.value.CharacterString",
-            "bacnet.mpx.value.DateTimeValue"
-          ]
+          "enum": ["bacnet.mpx.value.CharacterString", "bacnet.mpx.value.DateTimeValue"]
         },
         "value": {
           "type": "string",
